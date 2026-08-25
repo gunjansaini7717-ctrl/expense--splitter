@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - Expense Splitter</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container dashboard-container">
+    <div class="dashboard-header">
+      <h1>My Groups</h1>
+      <button id="logoutBtn">Logout</button>
+    </div>
+
+    <!-- Form to create a new group -->
+    <form id="createGroupForm">
+      <input type="text" id="groupName" placeholder="New group name" required>
+      <button type="submit">Create Group</button>
+    </form>
+
+    <!-- This empty div will be filled dynamically with group cards via JavaScript -->
+    <div id="groupsList"></div>
+
+    <p id="message"></p>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>

@@ -26,7 +26,16 @@ form.addEventListener('submit', async (event) => {
 
       messageEl.style.color = 'green';
       messageEl.textContent = `Welcome, ${data.name}! Login successful.`;
-    } else {
+
+      // Redirect to the dashboard after a short delay, so the user briefly sees the success message
+  setTimeout(() => {
+    window.location.href = 'dashboard.html';
+  }, 1000); // 1000ms = 1 second delay
+
+    } 
+    
+
+    else {
       messageEl.style.color = 'red';
       messageEl.textContent = data.error || 'Login failed';
     }

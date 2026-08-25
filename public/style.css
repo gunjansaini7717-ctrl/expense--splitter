@@ -62,3 +62,23 @@ button:hover {
   text-align: center;
   font-size: 14px;
 }
+
+
+.dashboard-container {
+  width: 450px; /* wider than the login/signup cards, since it holds more content */
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.group-card {
+  background-color: #f9f9f9;
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 10px;
+  border: 1px solid #eee;
+}
