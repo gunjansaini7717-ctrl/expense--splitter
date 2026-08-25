@@ -21,15 +21,12 @@ app.use('/api/auth', authRoutes);
 // Just a plain variable to store which network port our server listens on.
 const PORT = 3000;
 
-// This defines a "route": when someone visits our server's root URL ('/') using a GET request,
-// run this function. 'req' = the incoming request data, 'res' = what we send back.
+
 app.get('/', (req, res) => {
   res.send('Expense Splitter backend is running!');
 });
 
-// This starts the server, telling it to actively listen for incoming requests on PORT 3000.
-// The second argument is a function that runs once the server successfully starts.
-// A quick one-time test route to confirm MySQL connection works
+
 app.get('/test-db', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT 1 + 1 AS result');
@@ -45,3 +42,11 @@ app.listen(PORT, () => {
 
 
 
+const authMiddleware = require('./middleware/authMiddleware');
+
+// Notice the second argument here: authMiddleware runs BEFORE this route's function
+app.get('/api/profile', authMiddleware, async (req, res) => {
+  // If we reach here, authMiddleware already verified the token and attached req.userId
+  const [users] = await pool.query('SELECT id, name, email FROM users WHERE id = ?', [req.userId]);
+  res.json(users[0]);
+});
