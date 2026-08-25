@@ -6,6 +6,9 @@ const app = express();
 const cors = require('cors');
 const pool = require('./db');
 const authRoutes = require('./routes/auth');
+const authMiddleware = require('./middleware/authMiddleware');
+const PORT = 3000;
+const groupRoutes = require('./routes/groups');
 
 // This creates our actual server application object. Every route/feature we add goes on 'app'.
 
@@ -18,8 +21,10 @@ app.use(express.json());
 // Any route starting with /api/auth will be handled by our authRoutes file
 app.use('/api/auth', authRoutes);
 
+app.use('/api/groups', groupRoutes);
+
 // Just a plain variable to store which network port our server listens on.
-const PORT = 3000;
+
 
 
 app.get('/', (req, res) => {
@@ -42,7 +47,7 @@ app.listen(PORT, () => {
 
 
 
-const authMiddleware = require('./middleware/authMiddleware');
+
 
 // Notice the second argument here: authMiddleware runs BEFORE this route's function
 app.get('/api/profile', authMiddleware, async (req, res) => {
