@@ -2,12 +2,15 @@
 
 // 'require' loads an external library into this file. This is how we use Express.
 const express = require('express');
+const app = express();
+const cors = require('cors');
+const pool = require('./db');
+const authRoutes = require('./routes/auth');
 
 // This creates our actual server application object. Every route/feature we add goes on 'app'.
-const app = express();
-const pool = require('./db');
 
-const authRoutes = require('./routes/auth');
+// This allows requests from other origins (like our frontend on a different port) to reach this server
+app.use(cors());
 
 // This lets our server understand JSON data sent in requests (needed for req.body to work)
 app.use(express.json());

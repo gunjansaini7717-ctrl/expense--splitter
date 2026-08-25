@@ -1,0 +1,64 @@
+/* Resets browser default spacing so we have consistent control */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* makes width/height calculations include padding+border, avoids surprises */
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f2f5; /* light grey background */
+  display: flex; /* flexbox lets us easily center content */
+  justify-content: center; /* centers horizontally */
+  align-items: center; /* centers vertically */
+  height: 100vh; /* 100% of the viewport (visible screen) height */
+}
+
+.container {
+  background-color: white;
+  padding: 40px;
+  border-radius: 10px; /* rounded corners */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* subtle shadow for depth */
+  width: 320px;
+}
+
+h1 {
+  margin-bottom: 20px;
+  font-size: 22px;
+  text-align: center;
+  color: #333;
+}
+
+/* This targets the <form> AND makes its children (inputs, button) stack vertically */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* spacing between each input/button */
+}
+
+input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+button {
+  padding: 10px;
+  background-color: #4CAF50; /* green */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 15px;
+  cursor: pointer; /* shows a "clickable hand" on hover */
+}
+
+button:hover {
+  background-color: #45a049; /* slightly darker green on hover */
+}
+
+#message {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 14px;
+}

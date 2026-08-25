@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!-- This tells the browser "this is a modern HTML5 document" -->
+<html lang="en">
+<head>
+  <!-- Metadata about the page, not visible on the page itself -->
+  <meta charset="UTF-8">
+  <title>Sign Up - Expense Splitter</title>
+  <!-- Links our CSS file (we'll create this next) for styling -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- The actual visible content starts here -->
+  <div class="container">
+    <h1>Create an Account</h1>
+
+    <!-- A form groups related input fields together -->
+    <form id="signupForm">
+      <input type="text" id="name" placeholder="Full Name" required>
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit">Sign Up</button>
+    </form>
+
+    <!-- Empty paragraph where we'll show success/error messages via JS -->
+    <p id="message"></p>
+  </div>
+
+  <!-- Links our JS file - placed at the bottom so HTML loads first -->
+  <script src="script.js"></script>
+</body>
+</html>
