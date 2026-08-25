@@ -36,4 +36,46 @@ router.post('/signup', async (req, res) => {
   }
 });
 
+
+// jsonwebtoken lets us create and verify secure tokens
+const jwt = require('jsonwebtoken');
+
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find the user with this email in the database
+    const [users] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+
+    // If no user found with that email, reject login
+    if (users.length === 0) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    const user = users[0];
+
+    // bcrypt.compare checks the typed password against the stored HASHED password
+    // (we never decrypt the hash - we hash-compare instead, since hashing is one-way)
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    // Create a token containing the user's id, signed with our secret key
+    // 'expiresIn' means this token stops being valid after 7 days - forces re-login eventually (security practice)
+    const token = jwt.sign(
+      { userId: user.id },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.json({ message: 'Login successful', token, name: user.name });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
+
