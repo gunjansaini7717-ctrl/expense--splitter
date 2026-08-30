@@ -43,17 +43,59 @@ async function loadGroups() {
     }
 
     // Loop through each group returned by the API, and build an HTML block for it
-    groups.forEach(group => {
-      // template literals (backticks) let us build HTML strings with embedded variables
-      const groupCard = `
-        <div class="group-card">
-          <strong>${group.name}</strong>
-          <p>Group ID: ${group.id}</p>
-        </div>
-      `;
-      // += appends this new HTML onto whatever's already inside groupsListEl
-      groupsListEl.innerHTML += groupCard;
-    });
+   groups.forEach(group => {
+  const groupCard = `
+    <div class="group-card">
+      <strong>${group.name}</strong>
+      <p>Group ID: ${group.id}</p>
+
+      <!-- Small inline form to add a member to THIS specific group -->
+      <form class="addMemberForm" data-group-id="${group.id}">
+        <input type="email" placeholder="Member's email" required>
+        <button type="submit">Add Member</button>
+      </form>
+      <p class="addMemberMessage"></p>
+    </div>
+  `;
+  groupsListEl.innerHTML += groupCard;
+});
+
+// After rendering ALL group cards, attach a submit handler to EACH add-member form.
+document.querySelectorAll('.addMemberForm').forEach(form => {
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const groupId = form.getAttribute('data-group-id');
+    const email = form.querySelector('input').value;
+    const msgEl = form.nextElementSibling;
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/groups/${groupId}/members`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        msgEl.style.color = 'green';
+        msgEl.textContent = 'Member added!';
+        form.reset();
+      } else {
+        msgEl.style.color = 'red';
+        msgEl.textContent = data.error || 'Failed to add member';
+      }
+
+    } catch (err) {
+      msgEl.style.color = 'red';
+      msgEl.textContent = 'Could not connect to server';
+    }
+  });
+});
 
   } catch (err) {
     messageEl.textContent = 'Could not connect to server';

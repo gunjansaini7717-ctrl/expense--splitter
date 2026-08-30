@@ -82,3 +82,18 @@ button:hover {
   margin-top: 10px;
   border: 1px solid #eee;
 }
+
+.addMemberForm {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.addMemberForm input {
+  flex: 1;
+}
+
+.addMemberMessage {
+  font-size: 12px;
+  margin-top: 4px;
+}
