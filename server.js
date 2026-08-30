@@ -55,3 +55,7 @@ app.get('/api/profile', authMiddleware, async (req, res) => {
   const [users] = await pool.query('SELECT id, name, email FROM users WHERE id = ?', [req.userId]);
   res.json(users[0]);
 });
+
+
+const expenseRoutes = require('./routes/expenses');
+app.use('/api/expenses', expenseRoutes);
