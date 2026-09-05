@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Group Details - Expense Splitter</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container dashboard-container">
+    <div class="dashboard-header">
+      <h1 id="groupTitle">Group</h1>
+      <a href="dashboard.html">← Back</a>
+    </div>
+
+    <!-- Form to add a new expense to this group -->
+    <form id="addExpenseForm">
+      <input type="text" id="description" placeholder="Description (e.g. Dinner)" required>
+      <input type="number" id="amount" placeholder="Amount" step="0.01" required>
+      <button type="submit">Add Expense</button>
+    </form>
+    <p id="expenseMessage"></p>
+
+    <h2 style="margin-top:20px;">Expenses</h2>
+    <div id="expensesList"></div>
+  </div>
+
+  <script src="group.js"></script>
+</body>
+</html>
