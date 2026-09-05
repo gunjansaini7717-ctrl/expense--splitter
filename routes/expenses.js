@@ -89,4 +89,96 @@ router.get('/:groupId', async (req, res) => {
   }
 });
 
+// GET the simplified settlement plan for a group
+router.get('/:groupId/settlement', async (req, res) => {
+  try {
+    const { groupId } = req.params;
+
+    // Step A: How much each person has PAID in total (they're owed this back)
+    const [paidTotals] = await pool.query(
+      `SELECT paid_by AS user_id, users.name, SUM(amount) AS total_paid
+       FROM expenses
+       JOIN users ON expenses.paid_by = users.id
+       WHERE group_id = ?
+       GROUP BY paid_by, users.name`,
+      [groupId]
+    );
+
+    // Step B: How much each person OWES in total (their share across all expenses)
+    const [owedTotals] = await pool.query(
+      `SELECT expense_splits.user_id, users.name, SUM(share_amount) AS total_owed
+       FROM expense_splits
+       JOIN expenses ON expense_splits.expense_id = expenses.id
+       JOIN users ON expense_splits.user_id = users.id
+       WHERE expenses.group_id = ?
+       GROUP BY expense_splits.user_id, users.name`,
+      [groupId]
+    );
+
+    // Step C: Combine both into a single net balance per person
+    // We use a plain JS object as a map: { userId: { name, balance } }
+    const balances = {};
+
+    paidTotals.forEach(row => {
+      balances[row.user_id] = {
+        name: row.name,
+        balance: parseFloat(row.total_paid)
+      };
+    });
+
+    owedTotals.forEach(row => {
+      if (!balances[row.user_id]) {
+        balances[row.user_id] = { name: row.name, balance: 0 };
+      }
+      balances[row.user_id].balance -= parseFloat(row.total_owed);
+    });
+
+    // Step D: Convert the balances object into an array we can sort and process
+    // Round to 2 decimals to avoid floating point noise (e.g. 0.0000001 instead of 0)
+    let balanceList = Object.entries(balances).map(([userId, data]) => ({
+      userId: parseInt(userId),
+      name: data.name,
+      balance: Math.round(data.balance * 100) / 100
+    }));
+
+    // Step E: The greedy settlement algorithm
+    const transactions = [];
+
+    // Separate into creditors (owed money, positive) and debtors (owe money, negative)
+    let creditors = balanceList.filter(p => p.balance > 0).sort((a, b) => b.balance - a.balance);
+    let debtors = balanceList.filter(p => p.balance < 0).sort((a, b) => a.balance - b.balance);
+
+    let i = 0, j = 0;
+
+    while (i < debtors.length && j < creditors.length) {
+      const debtor = debtors[i];
+      const creditor = creditors[j];
+
+      // The amount settled between these two is the smaller of what's owed vs what's due
+      const amount = Math.min(-debtor.balance, creditor.balance);
+
+      if (amount > 0) {
+        transactions.push({
+          from: debtor.name,
+          to: creditor.name,
+          amount: Math.round(amount * 100) / 100
+        });
+      }
+
+      // Reduce both balances by the settled amount
+      debtor.balance += amount;
+      creditor.balance -= amount;
+
+      // Move to the next person once their balance is fully settled (close to zero)
+      if (Math.abs(debtor.balance) < 0.01) i++;
+      if (Math.abs(creditor.balance) < 0.01) j++;
+    }
+
+    res.json({ balances: balanceList, transactions });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
