@@ -93,3 +93,40 @@ addExpenseForm.addEventListener('submit', async (event) => {
 });
 
 loadExpenses();
+
+const settlementBtn = document.getElementById('loadSettlementBtn');
+const settlementResultEl = document.getElementById('settlementResult');
+
+settlementBtn.addEventListener('click', async () => {
+  settlementResultEl.innerHTML = 'Calculating...';
+
+  try {
+    const response = await fetch(`http://localhost:3000/api/expenses/${groupId}/settlement`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      settlementResultEl.textContent = data.error || 'Failed to calculate settlement';
+      return;
+    }
+
+    if (data.transactions.length === 0) {
+      settlementResultEl.innerHTML = '<p>Everyone is settled up! 🎉</p>';
+      return;
+    }
+
+    // Build a clean list of "X pays Y ₹amount" lines
+    let html = '<div class="group-card"><strong>Suggested Payments:</strong><ul>';
+    data.transactions.forEach(t => {
+      html += `<li>${t.from} pays ${t.to} ₹${t.amount}</li>`;
+    });
+    html += '</ul></div>';
+
+    settlementResultEl.innerHTML = html;
+
+  } catch (err) {
+    settlementResultEl.textContent = 'Could not connect to server';
+  }
+});
