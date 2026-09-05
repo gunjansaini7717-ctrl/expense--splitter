@@ -52,4 +52,41 @@ router.post('/', async (req, res) => {
   }
 });
 
+// GET all expenses for a specific group, along with who paid and each person's split
+router.get('/:groupId', async (req, res) => {
+  try {
+    const { groupId } = req.params;
+
+    // Fetch all expenses for this group, JOINing with users to get the payer's name
+    const [expenses] = await pool.query(
+      `SELECT expenses.id, expenses.description, expenses.amount, expenses.created_at,
+              users.name AS paid_by_name
+       FROM expenses
+       JOIN users ON expenses.paid_by = users.id
+       WHERE expenses.group_id = ?
+       ORDER BY expenses.created_at DESC`,
+      [groupId]
+    );
+
+    // For each expense, also fetch its individual splits (who owes how much)
+    const expensesWithSplits = await Promise.all(
+      expenses.map(async (expense) => {
+        const [splits] = await pool.query(
+          `SELECT expense_splits.share_amount, users.name AS user_name
+           FROM expense_splits
+           JOIN users ON expense_splits.user_id = users.id
+           WHERE expense_splits.expense_id = ?`,
+          [expense.id]
+        );
+        return { ...expense, splits };
+      })
+    );
+
+    res.json(expensesWithSplits);
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
