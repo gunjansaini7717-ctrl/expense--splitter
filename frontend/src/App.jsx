@@ -1,10 +1,17 @@
+import { Routes, Route } from 'react-router-dom';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Dashboard from './pages/Dashboard';
+import GroupDetail from './pages/GroupDetail';
+
 function App() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <h1 className="text-3xl font-bold text-gray-800">
-        Expense Splitter — React + Tailwind is working!
-      </h1>
-    </div>
+    <Routes>
+      <Route path="/" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/group/:groupId" element={<GroupDetail />} />
+    </Routes>
   );
 }
 
