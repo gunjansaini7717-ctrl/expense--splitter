@@ -7,7 +7,7 @@ const cors = require('cors');
 const pool = require('./db');
 const authRoutes = require('./routes/auth');
 const authMiddleware = require('./middleware/authMiddleware');
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const groupRoutes = require('./routes/groups');
 
 // This creates our actual server application object. Every route/feature we add goes on 'app'.
