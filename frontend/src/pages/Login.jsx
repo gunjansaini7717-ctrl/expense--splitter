@@ -16,7 +16,7 @@ function Login() {
     setMessage('');
 
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/login', {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
         email,
         password
       });
@@ -37,7 +37,6 @@ function Login() {
   return (
     <div className="min-h-screen flex bg-gray-50">
 
-      {/* Left panel - branding, hidden on small screens */}
       <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-indigo-600 to-purple-700 items-center justify-center p-12">
         <motion.div
           initial={{ opacity: 0, x: -30 }}
@@ -53,7 +52,6 @@ function Login() {
         </motion.div>
       </div>
 
-      {/* Right panel - login form */}
       <div className="flex flex-1 items-center justify-center p-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 
 function GroupDetail() {
-  const { groupId } = useParams(); // reads the ':groupId' part of the URL, e.g. /group/3 -> "3"
+  const { groupId } = useParams();
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
@@ -25,7 +25,7 @@ function GroupDetail() {
 
   const loadExpenses = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/expenses/${groupId}`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/expenses/${groupId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setExpenses(response.data);
@@ -38,7 +38,7 @@ function GroupDetail() {
     e.preventDefault();
     try {
       await axios.post(
-        'http://localhost:3000/api/expenses',
+        `${import.meta.env.VITE_API_URL}/api/expenses`,
         { groupId, description, amount },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -55,7 +55,7 @@ function GroupDetail() {
     setSettlementLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/expenses/${groupId}/settlement`,
+        `${import.meta.env.VITE_API_URL}/api/expenses/${groupId}/settlement`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setSettlement(response.data);
@@ -77,7 +77,6 @@ function GroupDetail() {
           </Link>
         </div>
 
-        {/* Add expense form */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 mb-6">
           <h2 className="font-semibold text-gray-900 mb-3">Add an Expense</h2>
           <form onSubmit={handleAddExpense} className="flex flex-col sm:flex-row gap-2">
@@ -114,7 +113,6 @@ function GroupDetail() {
           )}
         </div>
 
-        {/* Expenses list */}
         <h2 className="font-semibold text-gray-900 mb-3">Expenses</h2>
         {expenses.length === 0 ? (
           <p className="text-gray-500 text-sm mb-8">No expenses yet.</p>
@@ -142,7 +140,6 @@ function GroupDetail() {
           </div>
         )}
 
-        {/* Settlement section */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
           <div className="flex justify-between items-center mb-3">
             <h2 className="font-semibold text-gray-900">Settle Up</h2>
