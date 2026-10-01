@@ -7,17 +7,13 @@ function Dashboard() {
   const [groups, setGroups] = useState([]);
   const [groupName, setGroupName] = useState('');
   const [message, setMessage] = useState('');
-  const [memberEmails, setMemberEmails] = useState({}); // tracks each group's own input value
-  const [memberMessages, setMemberMessages] = useState({}); // tracks each group's own status message
+  const [memberEmails, setMemberEmails] = useState({});
+  const [memberMessages, setMemberMessages] = useState({});
 
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const userName = localStorage.getItem('userName');
 
-  // useEffect runs side effects - code that needs to run when the component loads,
-  // or when specific values change. The empty array [] at the end means
-  // "run this only once, when the component first mounts" (similar to our old
-  // 'loadGroups()' call at the bottom of dashboard.js)
   useEffect(() => {
     if (!token) {
       navigate('/');
@@ -41,12 +37,12 @@ function Dashboard() {
     e.preventDefault();
     try {
       await axios.post(
-        'http://localhost:3000/api/groups',
+        `${import.meta.env.VITE_API_URL}/api/groups`,
         { name: groupName },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setGroupName('');
-      loadGroups(); // refresh list after creating
+      loadGroups();
     } catch (err) {
       setMessage(err.response?.data?.error || 'Failed to create group');
     }
@@ -58,11 +54,10 @@ function Dashboard() {
 
     try {
       await axios.post(
-        `http://localhost:3000/api/groups/${groupId}/members`,
+        `${import.meta.env.VITE_API_URL}/api/groups/${groupId}/members`,
         { email },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      // Update just THIS group's message, keeping others untouched (spread + override one key)
       setMemberMessages(prev => ({ ...prev, [groupId]: { text: 'Member added!', ok: true } }));
       setMemberEmails(prev => ({ ...prev, [groupId]: '' }));
     } catch (err) {
@@ -122,7 +117,6 @@ function Dashboard() {
           <p className="text-gray-500 text-sm">No groups yet. Create one above!</p>
         ) : (
           <div className="grid gap-4">
-            {/* AnimatePresence lets items animate IN when added and OUT when removed from the list */}
             <AnimatePresence>
               {groups.map((group) => (
                 <motion.div
